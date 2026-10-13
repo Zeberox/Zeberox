@@ -77,6 +77,7 @@ body.lang-swapping time[data-date]{opacity:.25}
 /* ---- layout + headings ---- */
 main{padding:48px 0 80px;min-height:70vh}
 h1{font-size:clamp(34px,6vw,52px);line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+h1.hero-name{font-size:clamp(31px,5.2vw,45px)}
 h2{font-size:20px;margin:56px 0 18px}
 h3{font-size:16px;margin:0 0 6px}
 .role{color:var(--accent);font-size:clamp(15px,2.4vw,20px);margin:0 0 28px}

@@ -127,12 +127,15 @@ def _highlight_terminal(code, state, is_shell):
     lines = code.split("\n")
     has_prompt = any(_PROMPT_RE.match(l) for l in lines)
     out = []
+    framed_bare = False  # in a prompt-less shell block, only the first line is the command
     for l in lines:
         m = _PROMPT_RE.match(l)
         if m:
             state["user"], state["host"] = m.group("u"), m.group("h")
             out.append(_frame(m.group("u"), m.group("h"), m.group("path"), m.group("c")))
-        elif is_shell and not has_prompt and l.strip() and not l.lstrip().startswith("#"):
+        elif (is_shell and not has_prompt and not framed_bare
+                and l.strip() and not l.lstrip().startswith("#")):
+            framed_bare = True
             out.append(_frame(state["user"] or DEFAULT_USER,
                               state["host"] or DEFAULT_HOST, "~", l))
         else:

@@ -28,6 +28,7 @@ def layout(ctx, *, title, description, path, active, content,
            og_type="website", image=""):
     site, T = ctx.site, ctx.T
     name = escape(site["name"])
+    author = escape(site.get("author") or site["name"])
 
     head = [
         '<meta charset="utf-8">',
@@ -124,7 +125,7 @@ def layout(ctx, *, title, description, path, active, content,
              if len(lang_list) > 1 else "")
 
     year = datetime.date.today().year
-    footer = f'© {year} {name}'
+    footer = f'© {year} {author}'
 
     return f"""<!doctype html>
 <html lang="{site['defaultLang']}">
@@ -248,7 +249,7 @@ def view_home(ctx, posts):
 
     html = [
         f'<p class="prompt">~/{escape(site["handle"])} $ whoami</p>',
-        f'<h1>{escape(site["name"])}</h1>',
+        f'<h1 class="hero-name">{escape(site.get("author") or site["name"])}</h1>',
         f'<p class="role" data-i18n="roles">{escape(T["roles"])}</p>',
         f'<p class="lead" data-i18n="bio">{escape(T["bio"])}</p>',
         f'<div class="btns">{"".join(btns)}</div>',

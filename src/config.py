@@ -8,6 +8,8 @@ CONFIG = {
     # --- Identity / Identita ------------------------------------------
     "name": "Zeberox",
     "handle": "zeberox",
+    # Real name: shown as the home-page headline and in the footer copyright.
+    "author": "Van Minh Nguyen",
     # Full <title> of the home page. Leave "" to fall back to "name | handle".
     "homeTitle": "Van Minh Nguyen | Zeberox",
     "tagline": "learn, write",
@@ -73,9 +75,8 @@ CONFIG = {
             "published": "Published", "contents": "Contents",
             "copy": "Copy", "copied": "Copied!",
             "roles": "Red teamer",
-            "bio": "I am an IT student at SSSI Tábor, Czech Republic. I am 18 years "
-                   "old and got into cybersecurity at 17. I play CTFs, solve lab "
-                   "machines and write about what I learn.",
+            "bio": "I am an IT student passionate about cybersecurity. I play CTFs, "
+                   "solve lab machines and write about what I learn.",
             "aboutBody": "Nothing.",
             "certsNote": "Currently preparing for the HTB CJCA (Certified Junior "
                          "Cybersecurity Analyst) exam. This page will be updated once "
@@ -91,9 +92,8 @@ CONFIG = {
             "published": "Đăng", "contents": "Mục lục",
             "copy": "Sao chép", "copied": "Đã sao chép!",
             "roles": "Red teamer",
-            "bio": "Mình là sinh viên IT của trường SSSI Tábor, Cộng hòa Séc. Năm nay "
-                   "mình 18 tuổi và bắt đầu quan tâm đến an ninh mạng từ năm 17 tuổi. "
-                   "Mình chơi CTF, giải lab và viết lại những gì học được.",
+            "bio": "Mình là sinh viên IT đam mê an ninh mạng. Mình chơi CTF, giải lab "
+                   "và viết lại những gì học được.",
             "aboutBody": "Không có gì.",
             "certsNote": "Hiện đang chuẩn bị cho kỳ thi HTB CJCA (Certified Junior "
                          "Cybersecurity Analyst). Mục này sẽ được cập nhật khi có "
