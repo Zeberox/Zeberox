@@ -173,6 +173,7 @@ input[type=search]{background:var(--panel);color:var(--text);border:1px solid va
 .cert-row img{width:76px;height:76px;flex-shrink:0;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--accent) 35%,transparent))}
 .cert-row h3{font-size:17px;margin:0 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .cert-row .issuer{color:var(--accent);font-size:12px;margin-bottom:6px}
+.cert-row .issuer a{color:inherit;text-decoration:none}
 .cert-row p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
 
 /* ---- key/value list ---- */

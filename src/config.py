@@ -50,6 +50,7 @@ CONFIG = {
         {
             "name": "HTB CJCA",
             "issuer": "Hack The Box",
+            "issuer_url": "https://academy.hackthebox.com/app/exams/7#key-differentiators",
             "status": "In preparation",
             "url": "",
             "badge": "img/cjca.png",

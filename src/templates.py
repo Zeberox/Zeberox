@@ -361,7 +361,12 @@ def view_certs(ctx):
             bsrc = c["badge"] if re.match(r'^(https?:|data:)', c["badge"]) else ctx.u(c["badge"])
             badge = f'<img src="{escape(bsrc)}" alt="{escape(c["name"])} badge" width="76" height="76" loading="lazy">'
         status = f'<span class="badge">{escape(c["status"])}</span>' if c.get("status") else ""
-        issuer = f'<div class="issuer">{escape(c["issuer"])}</div>' if c.get("issuer") else ""
+        issuer = ""
+        if c.get("issuer"):
+            itext = escape(c["issuer"])
+            if c.get("issuer_url"):
+                itext = f'<a href="{escape(c["issuer_url"])}" target="_blank" rel="noopener noreferrer">{itext}</a>'
+            issuer = f'<div class="issuer">{itext}</div>'
         note = f'<p>{escape(c["note"])}</p>' if c.get("note") else ""
         name = escape(c["name"])
         if c.get("url"):
