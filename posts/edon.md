@@ -6,10 +6,6 @@ summary: Dump a Node.js process's memory through /proc/<PID>/mem to recover a fl
 featured: true
 ---
 
-## Flag
-
-`haxagon{01060650ec87d4957ffc7fadcd7cc1b12496d2e5}`
-
 ## 1. Source code analysis
 
 Looking at `Challenge/build/main.js` (or `src/main.ts`), the program runs in four steps:

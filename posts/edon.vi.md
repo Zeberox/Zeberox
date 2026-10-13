@@ -3,10 +3,6 @@ title: Edon
 summary: Dump bộ nhớ tiến trình Node.js qua /proc/<PID>/mem để khôi phục flag đã bị xóa khỏi đĩa.
 ---
 
-## Flag
-
-`haxagon{01060650ec87d4957ffc7fadcd7cc1b12496d2e5}`
-
 ## 1. Phân tích mã nguồn
 
 Khi kiểm tra thư mục `Challenge/build/main.js` (hoặc `src/main.ts`), logic hoạt động của chương trình diễn ra theo 4 bước:
