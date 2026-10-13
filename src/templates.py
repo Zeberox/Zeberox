@@ -299,8 +299,13 @@ def view_post(ctx, p, posts):
         info = p["i18n"][l]
         toc = ""
         if len(info["toc"]) >= 3:
+            # NOTE: no escape() here on purpose. mdrender escapes the whole post
+            # source before it parses anything, so heading text reaches the toc
+            # already escaped ("/proc/&lt;PID&gt;/mem"). Escaping it a second
+            # time turns the entities into literals ("&amp;lt;") and the reader
+            # sees the raw &lt; in the contents list.
             lis = "".join(
-                f'<li class="lvl{it["level"]}"><a href="#{it["id"]}">{escape(it["text"])}</a></li>'
+                f'<li class="lvl{it["level"]}"><a href="#{it["id"]}">{it["text"]}</a></li>'
                 for it in info["toc"])
             toc = (f'<nav class="toc" aria-label="Table of contents">'
                    f'<div class="toc-h" data-i18n="contents">{escape(T["contents"])}</div><ul>{lis}</ul></nav>')

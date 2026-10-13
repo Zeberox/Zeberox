@@ -29,7 +29,7 @@ CONFIG = {
     # --- Links / Odkazy (leave "" to hide a link/button) --------------
     "links": {
         "email": "mailto:zeberox@proton.me",
-        "github": "",
+        "github": "https://github.com/Zeberox",
         "cv": "",                   # e.g. "cv.pdf" (put the file in static/)
         "pgp": "",                  # e.g. "pgp.txt" (put the file in static/)
     },

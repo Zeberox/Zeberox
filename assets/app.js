@@ -142,8 +142,16 @@
     runFilter();
   });
 
-  /* ---- copy buttons on code blocks ---- */
+  /* ---- copy buttons on code blocks ----
+     The <pre> scrolls sideways, so the button cannot live inside it: it would
+     be positioned against the content box and drift off with the code. Wrap
+     each block in a static .code-wrap and pin the button to that instead. */
   document.querySelectorAll(".md pre").forEach(function (pre) {
+    var wrap = document.createElement("div");
+    wrap.className = "code-wrap";
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "copy";
@@ -166,7 +174,7 @@
         fallback(text, done);
       }
     });
-    pre.appendChild(btn);
+    wrap.appendChild(btn);
   });
 
   function fallback(text, done) {

@@ -155,10 +155,17 @@ input[type=search]{background:var(--panel);color:var(--text);border:1px solid va
 .md hr{border:0;border-top:1px solid var(--line);margin:32px 0}
 .md a{text-decoration:underline;text-underline-offset:2px}
 
-/* copy-to-clipboard button on code blocks */
-.md pre .copy{position:absolute;top:8px;right:8px;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:6px;font:inherit;font-size:11px;padding:3px 9px;cursor:pointer;opacity:0;transition:opacity .15s}
-.md pre:hover .copy,.md pre .copy:focus-visible{opacity:1}
-.md pre .copy:hover{color:var(--text);border-color:var(--accent)}
+/* copy-to-clipboard button on code blocks.
+   app.js wraps every <pre> in .code-wrap and hangs the button off the WRAPPER,
+   not the <pre>. The <pre> is the element that scrolls sideways; anything
+   absolutely positioned inside it is anchored to its content box and would
+   slide out of view with the code on a long line. The wrapper never scrolls,
+   so the button stays pinned to the top-right corner. */
+.md .code-wrap{position:relative;margin:0 0 18px}
+.md .code-wrap>pre{margin:0}
+.md .code-wrap .copy{position:absolute;top:8px;right:8px;z-index:1;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:6px;font:inherit;font-size:11px;padding:3px 9px;cursor:pointer;opacity:0;transition:opacity .15s}
+.md .code-wrap:hover .copy,.md .code-wrap .copy:focus-visible{opacity:1}
+.md .code-wrap .copy:hover{color:var(--text);border-color:var(--accent)}
 
 /* ---- certifications ---- */
 .cert-list{display:grid;gap:16px;margin-top:28px}
@@ -180,7 +187,7 @@ footer{border-top:1px solid var(--line);padding:24px 0 calc(1cm + env(safe-area-
 
 /* trên thiết bị cảm ứng không có :hover nên nút copy phải hiện sẵn */
 @media (hover:none){
-  .md pre .copy{opacity:1}
+  .md .code-wrap .copy{opacity:1}
 }
 
 /* tablet dọc: thu gọn khoảng trắng, bỏ grid 2 cột quá chật */
@@ -241,6 +248,7 @@ footer{border-top:1px solid var(--line);padding:24px 0 calc(1cm + env(safe-area-
   .md h2{margin-top:32px}
   .md h3{margin-top:22px}
   .md pre{padding:12px;font-size:12.5px;margin-bottom:16px}
+  .md .code-wrap{margin-bottom:16px}
   .md ul,.md ol{padding-left:20px}
   .md h1,.md h2,.md h3{scroll-margin-top:112px}
 
