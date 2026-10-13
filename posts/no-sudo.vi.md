@@ -23,7 +23,7 @@ Kiểm tra `sudo`:
 
 ```bash
 sudo -l
-# Result: student is not in the sudoers file.
+student is not in the sudoers file.
 ```
 
 `sudo` bị chặn, nên mình quét Linux Capabilities trên hệ thống:
