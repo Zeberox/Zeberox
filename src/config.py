@@ -77,7 +77,7 @@ CONFIG = {
             "roles": "Red teamer",
             "bio": "I am an IT student passionate about cybersecurity. I play CTFs, "
                    "solve lab machines and write about what I learn.",
-            "aboutBody": "Nothing.",
+            "aboutBody": "Nothing...",
             "certsNote": "Currently preparing for the HTB CJCA (Certified Junior "
                          "Cybersecurity Analyst) exam. This page will be updated once "
                          "the certification is earned.",
@@ -94,7 +94,7 @@ CONFIG = {
             "roles": "Red teamer",
             "bio": "Mình là sinh viên IT đam mê an ninh mạng. Mình chơi CTF, giải lab "
                    "và viết lại những gì học được.",
-            "aboutBody": "Không có gì.",
+            "aboutBody": "Không có gì...",
             "certsNote": "Hiện đang chuẩn bị cho kỳ thi HTB CJCA (Certified Junior "
                          "Cybersecurity Analyst). Mục này sẽ được cập nhật khi có "
                          "chứng chỉ.",

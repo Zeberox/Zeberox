@@ -287,7 +287,6 @@ footer{border-top:1px solid var(--line);padding:24px 0 calc(1cm + env(safe-area-
 @view-transition{navigation:auto}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .prompt::after{animation:none}
   .seg-thumb,.seg-btn,.seg-btn span{transition:none}
   body.lang-swapping [data-i18n],
   body.lang-swapping [data-lang-text],

