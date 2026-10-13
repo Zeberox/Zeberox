@@ -48,6 +48,98 @@ def _inline(s):
     return re.sub(r'\[([^\]]+)\]\(([^)\s]+)\)', _link, s)
 
 
+# --- tiny, dependency-free syntax highlighter -----------------------------
+# Runs on already-HTML-escaped code (so " is &quot; and ' is &#39;). It is a
+# deliberately shallow, language-agnostic tokenizer: it colours comments,
+# strings, numbers and a union of common keywords. It is not a parser, so it
+# won't be perfect for every language — just enough to make code readable.
+_KW = {
+    # JS / TS
+    "const", "let", "var", "function", "return", "if", "else", "for", "while",
+    "do", "switch", "case", "break", "continue", "new", "class", "extends",
+    "super", "this", "import", "from", "export", "default", "async", "await",
+    "yield", "try", "catch", "finally", "throw", "typeof", "instanceof",
+    "void", "delete",
+    # Python
+    "def", "elif", "lambda", "pass", "with", "as", "not", "and", "or", "is",
+    "None", "True", "False", "global", "nonlocal", "raise", "except", "assert",
+    "del", "in",
+    # C / Go / Java-ish + shell
+    "public", "private", "protected", "static", "final", "int", "char",
+    "float", "double", "long", "short", "bool", "boolean", "string", "struct",
+    "enum", "null", "nil", "true", "false", "package", "func", "type",
+    "interface", "map", "range", "defer", "chan", "select", "go",
+    "echo", "then", "fi", "done", "local", "unset", "read", "of",
+}
+
+_TOKEN_RE = re.compile(r'''
+      (?P<comment> (?<![^\s])\#[^\n]* | (?<!:)//[^\n]* | /\*[\s\S]*?\*/ )
+    | (?P<string> &quot;[^\n]*?&quot; | &\#39;[^\n]*?&\#39; | `[^`\n]*` )
+    | (?P<num>     \b\d[\d.]*\b )
+    | (?P<word>    [A-Za-z_]\w* )
+''', re.VERBOSE)
+
+
+def _highlight(code):
+    def repl(m):
+        kind = m.lastgroup
+        val = m.group()
+        if kind == "word":
+            return f'<span class="t-kw">{val}</span>' if val in _KW else val
+        return f'<span class="t-{kind[:3]}">{val}</span>'
+    return _TOKEN_RE.sub(repl, code)
+
+
+# Shell languages: every typed command gets a prompt frame.
+_SHELL_LANGS = {"bash", "sh", "shell", "console", "terminal", "zsh"}
+# All blocks rendered "green on black". An untagged block counts too (it is
+# command output in these writeups) but its lines are never framed as commands.
+_TERM_LANGS = _SHELL_LANGS | {""}
+
+# Fallback identity for a bare command seen before any prompt in the document.
+DEFAULT_USER, DEFAULT_HOST = "user", "localhost"
+
+# A shell prompt line: user@host:path<$ or #> <command>.
+_PROMPT_RE = re.compile(r'^(?P<u>[^\s@]+)@(?P<h>[^\s:]+):(?P<path>\S*?)[#$](?P<c>.*)$')
+
+
+def _frame(user, host, path, cmd):
+    """One command rendered as the Parrot OS two-line prompt."""
+    ucls = "t-root" if user == "root" else "t-user"
+    return (
+        '<span class="t-box">┌──[</span>'
+        f'<span class="{ucls}">{user}</span>'
+        '<span class="t-at">@</span>'
+        f'<span class="t-host">{host}</span>'
+        '<span class="t-box">]─[</span>'
+        f'<span class="t-path">{path or "~"}</span>'
+        '<span class="t-box">]</span>\n'
+        '<span class="t-box">└──╼ </span>'
+        f'<span class="t-dollar">$</span> {cmd.strip()}'
+    )
+
+
+def _highlight_terminal(code, state, is_shell):
+    """Frame typed commands (prompt lines, and bare commands in a shell block)
+    while leaving output as plain green. `state` carries the last seen
+    user/host across blocks so bare commands inherit the right identity.
+    Runs on already-escaped text."""
+    lines = code.split("\n")
+    has_prompt = any(_PROMPT_RE.match(l) for l in lines)
+    out = []
+    for l in lines:
+        m = _PROMPT_RE.match(l)
+        if m:
+            state["user"], state["host"] = m.group("u"), m.group("h")
+            out.append(_frame(m.group("u"), m.group("h"), m.group("path"), m.group("c")))
+        elif is_shell and not has_prompt and l.strip() and not l.lstrip().startswith("#"):
+            out.append(_frame(state["user"] or DEFAULT_USER,
+                              state["host"] or DEFAULT_HOST, "~", l))
+        else:
+            out.append(l)  # output / comment
+    return "\n".join(out)
+
+
 def render_markdown(src, id_prefix=""):
     """Return (html, toc) where toc is a list of {'level','text','id'}.
 
@@ -55,14 +147,27 @@ def render_markdown(src, id_prefix=""):
     rendered in two languages on one page doesn't produce duplicate ids.
     """
     code_blocks = []
+    src = escape(src)
+
+    # Seed the terminal identity from the first prompt in the document, so a
+    # bare command appearing before any prompt still shows the right user@host.
+    term_state = {"user": None, "host": None}
+    seed = next((m for m in (_PROMPT_RE.match(l) for l in src.split("\n")) if m), None)
+    if seed:
+        term_state["user"], term_state["host"] = seed.group("u"), seed.group("h")
 
     def _stash(m):
         lang, code = m.group(1), re.sub(r'\n$', '', m.group(2))
         cls = f' class="language-{lang}"' if lang else ""
-        code_blocks.append(f'<pre><code{cls}>{code}</code></pre>')
+        low = lang.lower()
+        if low in _TERM_LANGS:
+            body = _highlight_terminal(code, term_state, low in _SHELL_LANGS)
+            code_blocks.append(f'<pre class="term"><code{cls}>{body}</code></pre>')
+        else:
+            code_blocks.append(f'<pre><code{cls}>{_highlight(code)}</code></pre>')
         return f'\x00{len(code_blocks) - 1}\x00'
 
-    src = re.sub(r'```(\w*)\n(.*?)```', _stash, escape(src), flags=re.DOTALL)
+    src = re.sub(r'```(\w*)\n(.*?)```', _stash, src, flags=re.DOTALL)
 
     out, toc = [], []
     seen_ids = {}
