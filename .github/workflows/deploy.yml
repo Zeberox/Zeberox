@@ -1,0 +1,62 @@
+name: Deploy to GitHub Pages
+
+# Builds posts/*.md into dist/ and publishes it to GitHub Pages on every push
+# to main. One-time setup: repo → Settings → Pages → Build and deployment →
+# Source: "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Work out base path and site URL from the repo name
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"        # lower-cased owner
+          repo="${GITHUB_REPOSITORY#*/}"
+          if [ "$repo" = "$owner.github.io" ]; then
+            echo "BASE_PATH=/" >> "$GITHUB_ENV"
+            echo "SITE_URL=https://$owner.github.io" >> "$GITHUB_ENV"
+          else
+            echo "BASE_PATH=/$repo/" >> "$GITHUB_ENV"
+            echo "SITE_URL=https://$owner.github.io/$repo" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build
+        run: python3 scripts/build.py
+        env:
+          BASE_PATH: ${{ env.BASE_PATH }}
+          SITE_URL: ${{ env.SITE_URL }}
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
